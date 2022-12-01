@@ -2,6 +2,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
+namespace pgl::aoc {
+
 std::fstream open_file(const std::string &filePath) {
   std::fstream file{filePath};
   if (!file.is_open()) {
@@ -22,3 +24,5 @@ std::vector<std::string> split(const std::stringstream &stringstream,
   boost::algorithm::split(lines, stringstream.str(), boost::is_any_of(delim));
   return lines;
 }
+
+} // namespace pgl::aoc
