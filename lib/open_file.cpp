@@ -18,8 +18,7 @@ std::stringstream read_file(const std::fstream &file) {
   return ss;
 }
 
-std::vector<std::string> split(const std::stringstream &stringstream,
-                               const std::string &delim) {
+Lines split(const std::stringstream &stringstream, const std::string &delim) {
   std::vector<std::string> lines;
   boost::algorithm::split(lines, stringstream.str(), boost::is_any_of(delim));
   return lines;

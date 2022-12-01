@@ -6,14 +6,14 @@ find_package(Boost REQUIRED)
 add_library(${PROJECT_NAME} STATIC open_file.cpp)
 
 target_link_libraries(${PROJECT_NAME}
-PRIVATE
-${Boost_LIBRARY_DIRS})
+  PRIVATE
+  ${Boost_LIBRARY_DIRS}
+)
 
 target_include_directories(${PROJECT_NAME}
-PRIVATE
-${Boost_INCLUDE_DIRS})
-target_compile_options(${PROJECT_NAME} PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+  PRIVATE
+  ${Boost_INCLUDE_DIRS}
+  PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
