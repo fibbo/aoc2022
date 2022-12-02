@@ -24,4 +24,8 @@ Lines split(const std::stringstream &stringstream, const std::string &delim) {
   return lines;
 }
 
+Lines read_lines(const std::string &filePath, const std::string &delim) {
+  return split(read_file(open_file(filePath)), delim);
+}
+
 } // namespace pgl::aoc

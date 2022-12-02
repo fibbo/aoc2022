@@ -40,13 +40,16 @@ void part2(const Lines &lines) {
 
   std::sort(calCounts.begin(), calCounts.end(),
             [](const auto &a, const auto &b) { return a > b; });
+  const auto calories =
+      std::accumulate(calCounts.begin(), std::next(calCounts.begin(), 3), 0,
+                      [](const auto &a, const auto &b) { return a + b; });
 
-  std::cout << calCounts[0] + calCounts[1] + calCounts[2] << std::endl;
+  std::cout << calories << std::endl;
 }
 
 int main(int /*argc*/, char **argv) {
 
-  const auto lines = split(read_file(open_file(argv[1])), "\n");
+  const auto lines = read_lines(argv[1], "\n");
   part1(lines);
   part2(lines);
 

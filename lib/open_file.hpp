@@ -14,4 +14,6 @@ using Lines = std::vector<std::string>;
 Lines split(const std::stringstream &stringstream,
             const std::string &delim = "\n");
 
+Lines read_lines(const std::string &filePath, const std::string &delim = "\n");
+
 } // namespace pgl::aoc
