@@ -1,4 +1,4 @@
-#include "open_file.hpp"
+#include "aoc_lib.hpp"
 
 #include <algorithm>
 #include <cstdint>

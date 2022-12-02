@@ -1,4 +1,4 @@
-#include "open_file.hpp"
+#include "aoc_lib.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
