@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 project(aoc_lib)
 set(CMAKE_CXX_STANDARD 20)
 find_package(Boost REQUIRED)
-add_library(${PROJECT_NAME} STATIC open_file.cpp)
+add_library(${PROJECT_NAME} STATIC src/open_file.cpp)
 
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
@@ -14,6 +14,6 @@ target_include_directories(${PROJECT_NAME}
   PRIVATE
   ${Boost_INCLUDE_DIRS}
   PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
