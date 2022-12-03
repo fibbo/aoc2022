@@ -35,18 +35,16 @@ void part1(const Lines &lines) {
     }
     {
       const auto sv = std::string_view(line.c_str() + line.size() / 2);
-
-      for (const auto c : sv) {
-        if (seen.contains(c)) {
-          prioSum += prioMap(c);
-          break;
+      std::any_of(sv.begin(), sv.end(), [&seen, &prioSum](const auto &c) {
+        if (!seen.contains(c)) {
+          return false;
         }
-      }
+        prioSum += prioMap(c);
+        return true;
+      });
     }
-
     seen.clear();
   }
-
   std::cout << prioSum << std::endl;
 }
 
