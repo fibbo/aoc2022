@@ -21,6 +21,9 @@ std::stringstream read_file(const std::fstream &file) {
 Lines split(const std::stringstream &stringstream, const std::string &delim) {
   std::vector<std::string> lines;
   boost::algorithm::split(lines, stringstream.str(), boost::is_any_of(delim));
+  if (lines.back().empty()) {
+    lines.pop_back();
+  }
   return lines;
 }
 
