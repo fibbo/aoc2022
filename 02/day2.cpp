@@ -30,15 +30,15 @@ static const std::unordered_map<std::string, uint32_t> outcomeScopeMapPart1 = {
 };
 
 static const std::unordered_map<std::string, uint32_t> outcomeScopeMapPart2 = {
-    {"A X", loss + scissorsValue}, // Lose against Rock
-    {"A Y", draw + rockValue},     // Draw against Rock
-    {"A Z", win + paperValue},     // Win against Rock
-    {"B X", loss + rockValue},     // Lose against Paper
-    {"B Y", draw + paperValue},    // Draw against Paper
-    {"B Z", win + scissorsValue},  // Win against Paper
-    {"C X", loss + paperValue},    // Lose against Scissors
-    {"C Y", draw + scissorsValue}, // Draw against Scissors
-    {"C Z", win + rockValue},      // Win against Scissors
+    {"A X", loss + scissorsValue}, // Lose against Rock (play Scissors)
+    {"A Y", draw + rockValue},     // Draw against Rock (play Rock)
+    {"A Z", win + paperValue},     // Win against Rock (play Paper)
+    {"B X", loss + rockValue},     // Lose against Paper (play Rock)
+    {"B Y", draw + paperValue},    // Draw against Paper (play Paper)
+    {"B Z", win + scissorsValue},  // Win against Paper (play Scissors)
+    {"C X", loss + paperValue},    // Lose against Scissors (play Paper)
+    {"C Y", draw + scissorsValue}, // Draw against Scissors (play Scissors)
+    {"C Z", win + rockValue},      // Win against Scissors (play Rock)
 };
 
 void solve(const Lines &lines,
