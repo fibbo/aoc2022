@@ -1,19 +1,18 @@
 #include "aoc_lib.hpp"
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
+#include "range/v3/iterator/operations.hpp"
+#include "range/v3/range/primitives.hpp"
+#include "range/v3/view/filter.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <range/v3/all.hpp>
 
 using namespace pgl::aoc;
 
 class Section {
 public:
   explicit Section(const std::string &sectionString) {
-    std::vector<std::string> tokens;
-    boost::split(tokens, sectionString, boost::is_any_of("-"));
-    if (tokens.size() != 2) {
-      throw std::runtime_error("Invalid section string: " + sectionString);
-    }
+    const auto tokens = split_line(sectionString, "-");
     begin_ = std::stoi(tokens[0]);
     end_ = std::stoi(tokens[1]);
   }
@@ -39,32 +38,34 @@ bool contains(const Section &section, const Section &other) {
   return section.contains(other) || other.contains(section);
 }
 
+template <typename Filter>
+auto countDoubleWork(const Tokens &tokens, Filter &&f) {
+  const auto overlapCount = ranges::distance(
+      tokens | ranges::views::transform([](const std::string &line) {
+        const auto tokens = split_line(line, ",");
+        return std::make_pair(Section(tokens[0]), Section(tokens[1]));
+      }) |
+      ranges::views::filter([f = std::move(f)](const auto &pair) {
+        return f(pair.first, pair.second);
+      }));
+  return overlapCount;
+}
+
 int main(int /*argc*/, char **argv) {
   const auto lines = read_lines(argv[1]);
-  std::vector<Section> sections;
 
-  uint32_t nFullyContains{0};
-  uint32_t nOverlaps{0};
+  const auto fullyContainedCount =
+      countDoubleWork(lines, [](const Section &section, const Section &other) {
+        return contains(section, other);
+        ;
+      });
+  const auto overlapCount =
+      countDoubleWork(lines, [](const Section &section, const Section &other) {
+        return section.overlaps(other);
+      });
 
-  for (const auto &line : lines) {
-    std::vector<std::string> tokens;
-    boost::split(tokens, line, boost::is_any_of(","));
-    if (tokens.size() != 2) {
-      throw std::runtime_error("Invalid line: " + line);
-    }
-    Section a(tokens[0]);
-    Section b(tokens[1]);
-
-    if (contains(a, b)) {
-      nFullyContains++;
-    }
-
-    if (a.overlaps(b)) {
-      nOverlaps++;
-    }
-  }
-  std::cout << "Number of fully contained sections: " << nFullyContains
+  std::cout << "Number of fully contained sections: " << fullyContainedCount
             << std::endl;
-  std::cout << "Number of overlaps: " << nOverlaps << std::endl;
+  std::cout << "Number of overlaps: " << overlapCount << std::endl;
   return 0;
 }

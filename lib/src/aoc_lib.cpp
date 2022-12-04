@@ -18,7 +18,8 @@ std::stringstream read_file(const std::fstream &file) {
   return ss;
 }
 
-Lines split(const std::stringstream &stringstream, const std::string &delim) {
+Tokens split_stringstream(const std::stringstream &stringstream,
+                          const std::string &delim) {
   std::vector<std::string> lines;
   boost::algorithm::split(lines, stringstream.str(), boost::is_any_of(delim));
   while (lines.back().empty()) {
@@ -28,7 +29,15 @@ Lines split(const std::stringstream &stringstream, const std::string &delim) {
 }
 
 Lines read_lines(const std::string &filePath) {
-  return split(read_file(open_file(filePath)), "\n");
+  return split_stringstream(read_file(open_file(filePath)), "\n");
+}
+
+// Not really necessary function, but I'm too lazy to type this out every time
+// i.e. boost::is_any_of(",") is too long to type :)
+Tokens split_line(const std::string &line, const std::string &delim) {
+  Tokens tokens;
+  boost::algorithm::split(tokens, line, boost::is_any_of(delim));
+  return tokens;
 }
 
 } // namespace pgl::aoc
