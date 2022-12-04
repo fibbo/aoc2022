@@ -10,7 +10,7 @@
 using namespace pgl::aoc;
 
 void part1(const Lines &lines) {
-  uint32_t calCount = 0;
+  uint32_t calCount{0};
   uint32_t bigGuyCal{0};
 
   for (const auto &line : lines) {
@@ -49,7 +49,7 @@ void part2(const Lines &lines) {
 
 int main(int /*argc*/, char **argv) {
 
-  const auto lines = read_lines(argv[1], "\n");
+  const auto lines = read_lines(argv[1]);
   part1(lines);
   part2(lines);
 

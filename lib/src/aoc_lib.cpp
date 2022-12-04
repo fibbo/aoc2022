@@ -21,14 +21,14 @@ std::stringstream read_file(const std::fstream &file) {
 Lines split(const std::stringstream &stringstream, const std::string &delim) {
   std::vector<std::string> lines;
   boost::algorithm::split(lines, stringstream.str(), boost::is_any_of(delim));
-  if (lines.back().empty()) {
+  while (lines.back().empty()) {
     lines.pop_back();
   }
   return lines;
 }
 
-Lines read_lines(const std::string &filePath, const std::string &delim) {
-  return split(read_file(open_file(filePath)), delim);
+Lines read_lines(const std::string &filePath) {
+  return split(read_file(open_file(filePath)), "\n");
 }
 
 } // namespace pgl::aoc
