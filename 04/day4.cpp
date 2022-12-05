@@ -1,11 +1,9 @@
 #include "aoc_lib.hpp"
 #include "range/v3/iterator/operations.hpp"
-#include "range/v3/range/primitives.hpp"
 #include "range/v3/view/filter.hpp"
-#include <cstddef>
+#include "range/v3/view/transform.hpp"
 #include <cstdint>
 #include <iostream>
-#include <range/v3/all.hpp>
 
 using namespace pgl::aoc;
 
