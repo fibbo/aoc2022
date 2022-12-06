@@ -1,6 +1,6 @@
 #include "aoc_lib.hpp"
 #include <algorithm>
-#include <array>
+#include <cstdint>
 #include <deque>
 #include <iostream>
 #include <unordered_set>
@@ -9,23 +9,20 @@ using namespace pgl::aoc;
 
 uint32_t findSequenceStart(const std::string &sequence,
                            uint32_t uniqueCharacters) {
-  size_t positionMarker{0};
-  std::vector<char> buffer;
+  std::deque<char> buffer;
 
+  size_t positionMarker{0};
   for (; positionMarker < sequence.size(); ++positionMarker) {
     buffer.push_back(sequence[positionMarker]);
     if (buffer.size() < uniqueCharacters) {
       continue;
     }
 
-    auto checkForUnique = buffer;
-    std::sort(checkForUnique.begin(), checkForUnique.end());
-    auto last = std::unique(checkForUnique.begin(), checkForUnique.end());
-    checkForUnique.erase(last, checkForUnique.end());
-    if (checkForUnique.size() == uniqueCharacters) {
+    std::unordered_set<char> characterSet{buffer.begin(), buffer.end()};
+    if (characterSet.size() == uniqueCharacters) {
       break;
     }
-    buffer.erase(buffer.begin());
+    buffer.pop_front();
   }
   return ++positionMarker;
 }
