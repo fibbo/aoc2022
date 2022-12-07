@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <range/v3/view/drop.hpp>
 #include <string>
 #include <vector>
 
@@ -23,8 +24,7 @@ struct File {
 
 void parseFileSystem(const Lines& lines, File* root) {
   File* parent{root};
-  bool addToParent{false};
-  for (const auto& line : lines) {
+  for (const auto& line : lines | ranges::views::drop(1)) {
     // Move one folder up
     if (line == "$ cd ..") {
       parent = parent->parent;
@@ -33,32 +33,29 @@ void parseFileSystem(const Lines& lines, File* root) {
 
     // About to list directory
     if (line == "$ ls") {
-      addToParent = true;
       continue;
     }
 
     // $ cd <path>
     // This is always follwed by a $ ls
     // Make the <path> File the parent for the next $ ls
-    const auto tokens = split_line(line, " ");
-    const auto name = tokens[2];
-    const auto it = std::find_if(
-        parent->children.begin(),
-        parent->children.end(),
-        [&name](const File& file) { return file.name == name; });
-    if (it != parent->children.end()) {
-      addToParent = false;
+    // NB: $ cd / has been dropped from the input
+    if (line.starts_with("$ cd ")) {
+      const auto name = line.substr(5);
+      const auto it = std::find_if(
+          parent->children.begin(),
+          parent->children.end(),
+          [&name](const File& file) { return file.name == name; });
       parent = &(*it);
+      continue;
     }
 
-    if (addToParent) {
-      const auto tokens = split_line(line, " ");
-      if (tokens[0] == "dir") {
-        parent->children.emplace_back(tokens[1], true, 0);
-        parent->children.back().parent = parent;
-      } else {
-        parent->children.emplace_back(tokens[1], false, std::stoul(tokens[0]));
-      }
+    const auto tokens = split_line(line, " ");
+    if (tokens[0] == "dir") {
+      parent->children.emplace_back(tokens[1], true, 0);
+      parent->children.back().parent = parent;
+    } else {
+      parent->children.emplace_back(tokens[1], false, std::stoul(tokens[0]));
     }
   }
 }
@@ -83,12 +80,19 @@ void traverseFileSystem(File* root, F&& f) {
 }
 
 int main(int argc, char** argv) {
-  Lines lines;
+  std::string fileName;
   if (argc == 2) {
-    lines = read_lines(argv[1]);
+    fileName = argv[1];
   } else {
-    lines = read_lines("07/input_example.txt");
+    fileName = "07/input_example.txt";
   }
+
+  bool runExample{false};
+  if (fileName.find("example") != std::string::npos) {
+    runExample = true;
+  }
+
+  const auto lines = read_lines(fileName);
 
   File root("/", true, 0);
   parseFileSystem(lines, &root);
@@ -102,6 +106,11 @@ int main(int argc, char** argv) {
   };
   traverseFileSystem(&root, hasMaxSize);
   std::cout << size << std::endl;
+  if (runExample) {
+    assert(size == 95437);
+  } else {
+    assert(size == 1428881);
+  }
 
   constexpr uint64_t maxSize{70000000U};
   constexpr uint64_t minSpaceNeeded{30000000U};
@@ -116,6 +125,11 @@ int main(int argc, char** argv) {
   };
   traverseFileSystem(&root, wouldFreeEnoughSpace);
   std::sort(candidatesToDelete.begin(), candidatesToDelete.end());
+  if (runExample) {
+    assert(candidatesToDelete.front() == 24933642);
+  } else {
+    assert(candidatesToDelete.front() == 10475598);
+  }
   std::cout << candidatesToDelete.front() << std::endl;
 
   return 0;
