@@ -22,8 +22,6 @@ FixNamespaceComments: true
 SortUsingDeclarations: false
 
 # Braces:
-BreakBeforeBraces: Allman
-# BreakBeforeBraces: Stroustrup
 
 # Classes:
 ConstructorInitializerAllOnOneLineOrOnePerLine: false

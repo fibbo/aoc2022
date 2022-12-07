@@ -9,24 +9,22 @@
 using namespace pgl::aoc;
 
 struct File {
-  File(const std::string &name, bool isDirectory, uint64_t size)
-      : name{name}, isDirectory{isDirectory}, size{size} {}
+  File(const std::string& name, bool isDirectory, uint64_t size)
+      : name{name}
+      , isDirectory{isDirectory}
+      , size{size} {
+  }
   std::string name;
   bool isDirectory;
   uint64_t size;
-  File *parent{nullptr};
+  File* parent{nullptr};
   std::vector<File> children;
 };
 
-void parseFileSystem(const Lines &lines, File *root) {
-  File *parent{nullptr};
+void parseFileSystem(const Lines& lines, File* root) {
+  File* parent{root};
   bool addToParent{false};
-  for (const auto &line : lines) {
-    if (line == "$ cd /") {
-      parent = root;
-      continue;
-    }
-
+  for (const auto& line : lines) {
     // Move one folder up
     if (line == "$ cd ..") {
       parent = parent->parent;
@@ -40,12 +38,14 @@ void parseFileSystem(const Lines &lines, File *root) {
     }
 
     // $ cd <path>
+    // This is always follwed by a $ ls
     // Make the <path> File the parent for the next $ ls
     const auto tokens = split_line(line, " ");
     const auto name = tokens[2];
-    const auto it =
-        std::find_if(parent->children.begin(), parent->children.end(),
-                     [&name](const File &file) { return file.name == name; });
+    const auto it = std::find_if(
+        parent->children.begin(),
+        parent->children.end(),
+        [&name](const File& file) { return file.name == name; });
     if (it != parent->children.end()) {
       addToParent = false;
       parent = &(*it);
@@ -63,8 +63,8 @@ void parseFileSystem(const Lines &lines, File *root) {
   }
 }
 
-void calculateFolderSize(File *root) {
-  for (auto &child : root->children) {
+void calculateFolderSize(File* root) {
+  for (auto& child : root->children) {
     if (child.isDirectory) {
       calculateFolderSize(&child);
     }
@@ -72,8 +72,9 @@ void calculateFolderSize(File *root) {
   }
 }
 
-template <typename F> void traverseFileSystem(File *root, F &&f) {
-  for (auto &child : root->children) {
+template <typename F>
+void traverseFileSystem(File* root, F&& f) {
+  for (auto& child : root->children) {
     if (child.isDirectory) {
       f(child);
       traverseFileSystem(&child, f);
@@ -81,7 +82,7 @@ template <typename F> void traverseFileSystem(File *root, F &&f) {
   }
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   Lines lines;
   if (argc == 2) {
     lines = read_lines(argv[1]);
@@ -94,7 +95,7 @@ int main(int argc, char **argv) {
   calculateFolderSize(&root);
 
   uint64_t size{0};
-  const auto hasMaxSize = [&size](const File &file) {
+  const auto hasMaxSize = [&size](const File& file) {
     if (file.isDirectory && file.size <= 100000) {
       size += file.size;
     }
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
   const auto spaceNeeded = root.size - useableSpace;
   std::vector<uint64_t> candidatesToDelete;
   const auto wouldFreeEnoughSpace = [&candidatesToDelete,
-                                     spaceNeeded](const File &file) {
+                                     spaceNeeded](const File& file) {
     if (file.isDirectory && file.size >= spaceNeeded) {
       candidatesToDelete.push_back(file.size);
     }
