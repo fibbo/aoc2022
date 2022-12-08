@@ -12,7 +12,7 @@ int main(int argc, char** argv) {
   if (argc == 2) {
     fileName = argv[1];
   } else {
-    fileName = "x/input_example.txt";
+    fileName = "09/input_example.txt";
   }
 
   [[maybe_unused]] bool runExample{false};
