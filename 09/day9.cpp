@@ -9,32 +9,6 @@
 
 using namespace pgl::aoc;
 
-struct Point {
-  Point()
-      : x{0}
-      , y{0} {
-  }
-
-  Point(int64_t x, int64_t y)
-      : x(x)
-      , y(y) {
-  }
-  int64_t x;
-  int64_t y;
-  bool operator==(const Point& p) const {
-    return p.x == x && p.y == y;
-  }
-};
-
-namespace std {
-template <>
-struct hash<Point> {
-  size_t operator()(const Point& p) const {
-    return (53 + p.x) * 53 + p.y;
-  }
-};
-}  // namespace std
-
 struct Move {
   char direction;
   int64_t distance;
@@ -86,11 +60,11 @@ private:
   }
 
   void moveTwoKnots(Point& head, Point& tail) {
-    if (std::abs(head.x - tail.x) <= 1 && std::abs(head.y - tail.y) <= 1) {
+    const auto xDiff = head.x - tail.x;
+    const auto yDiff = head.y - tail.y;
+    if (std::abs(xDiff) <= 1 && std::abs(yDiff) <= 1) {
       return;
     }
-    auto xDiff = head.x - tail.x;
-    auto yDiff = head.y - tail.y;
     if (xDiff > 1) {
       tail.x += 1;
     } else if (xDiff < -1) {
