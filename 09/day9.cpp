@@ -3,9 +3,122 @@
 #include <algorithm>
 #include <cstdint>
 #include <iostream>
+#include <istream>
+#include <unordered_set>
 #include <vector>
 
 using namespace pgl::aoc;
+
+struct Point {
+  Point()
+      : x{0}
+      , y{0} {
+  }
+
+  Point(int64_t x, int64_t y)
+      : x(x)
+      , y(y) {
+  }
+  int64_t x;
+  int64_t y;
+  bool operator==(const Point& p) const {
+    return p.x == x && p.y == y;
+  }
+};
+
+namespace std {
+template <>
+struct hash<Point> {
+  size_t operator()(const Point& p) const {
+    return (53 + p.x) * 53 + p.y;
+  }
+};
+}  // namespace std
+
+struct Move {
+  char direction;
+  int64_t distance;
+};
+
+std::istream& operator>>(std::istream& is, Move& move) {
+  is >> move.direction >> move.distance;
+  return is;
+}
+
+class Rope {
+public:
+  explicit Rope(uint32_t numberKnots)
+      : knots_{std::vector<Point>(numberKnots)}
+      , head_{knots_.front()}
+      , tail_{knots_.back()} {
+  }
+
+  void move(const Move& move) {
+    for (auto i = 0U; i < move.distance; ++i) {
+      switch (move.direction) {
+      case 'U':
+        head_.y += 1;
+        break;
+      case 'D':
+        head_.y -= 1;
+        break;
+      case 'L':
+        head_.x -= 1;
+        break;
+      case 'R':
+        head_.x += 1;
+        break;
+      }
+      moveKnots();
+      visitedPoints_.insert(knots_.back());
+    }
+  }
+
+  size_t visitedPoints() const {
+    return visitedPoints_.size();
+  }
+
+private:
+  void moveKnots() {
+    for (auto i = 0U; i < knots_.size() - 1; ++i) {
+      moveTwoKnots(knots_[i], knots_[i + 1]);
+    }
+  }
+
+  void moveTwoKnots(Point& head, Point& tail) {
+    if (std::abs(head.x - tail.x) <= 1 && std::abs(head.y - tail.y) <= 1) {
+      return;
+    }
+    auto xDiff = head.x - tail.x;
+    auto yDiff = head.y - tail.y;
+    if (xDiff > 1) {
+      tail.x += 1;
+    } else if (xDiff < -1) {
+      tail.x -= 1;
+    }
+    if (yDiff > 1) {
+      tail.y += 1;
+    } else if (yDiff < -1) {
+      tail.y -= 1;
+    }
+    if (std::abs(xDiff) + std::abs(yDiff) == 3) {
+      // Tail needs to move diagonally
+      if (std::abs(xDiff) == 2) {
+        // Align in x direction
+        tail.y = head.y;
+
+      } else {
+        // Align in y direction
+        tail.x = head.x;
+      }
+    }
+  }
+
+  std::unordered_set<Point> visitedPoints_;
+  std::vector<Point> knots_;
+  Point& head_;
+  Point& tail_;
+};
 
 int main(int argc, char** argv) {
   std::string fileName;
@@ -21,6 +134,21 @@ int main(int argc, char** argv) {
   }
 
   const auto lines = read_lines(fileName);
+
+  std::unordered_set<Point> points;
+  Rope rope(2);
+  Rope rope2(10);
+  Move m;
+  for (const auto& line : lines) {
+    std::istringstream is(line);
+    while (is >> m) {
+      rope.move(m);
+      rope2.move(m);
+    }
+  }
+
+  std::cout << rope.visitedPoints() << std::endl;
+  std::cout << rope2.visitedPoints() << std::endl;
 
   return 0;
 }
