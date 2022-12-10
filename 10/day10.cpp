@@ -7,7 +7,6 @@
 
 using namespace pgl::aoc;
 
-
 enum class OpType {
   addx,
   noop,
@@ -21,7 +20,6 @@ public:
   Op() = default;
   bool execute(Cpu&);
 
-
 private:
   friend std::istream& operator>>(std::istream&, Op&);
   friend class Cpu;
@@ -34,19 +32,23 @@ class Cpu {
 public:
   Cpu();
 
-  void increaseCycle();
+  void cycle();
   void run();
-  void addOp(Op op);
+  void addOp(Op&& op);
   void addX(int64_t x);
   void printScreen();
 
 private:
   bool cursorWithinSprite() const;
+  void checkSignalStrength();
+  void drawPixel();
 
   Op* currentOp_;
   uint64_t cycle_;
   int64_t register_;
   int64_t signalStrength_;
+  uint64_t displayWidth_;
+  uint64_t displayHeight_;
   std::vector<char> screen_;
   std::deque<Op> ops_;
 };
@@ -55,49 +57,34 @@ Cpu::Cpu()
     : currentOp_{nullptr}
     , cycle_{0}
     , register_{1}
-    , signalStrength_{0} {
-  screen_.resize(240, '.');
+    , signalStrength_{0}
+    , displayWidth_{40}
+    , displayHeight_{6}
+    , screen_(displayWidth_ * displayHeight_, ' ') {
 }
 
-void Cpu::increaseCycle() {
+void Cpu::cycle() {
   ++cycle_;
   if (currentOp_ == nullptr) {
-    currentOp_ = &ops_[0];
-  }
-  std::cout << "Cycle: " << cycle_ << " Register: " << register_ << std::endl;
-
-  // during the cycle
-  if ((cycle_ + 20) % 40 == 0) {
-    signalStrength_ += register_ * cycle_;
-    std::cout << "Signal strength: " << signalStrength_ << std::endl;
+    currentOp_ = &ops_.front();
   }
 
-  // Check if the register_ is covering the pixel where the current cycle is
-  // drawing
-  auto c = '.';
-  const auto row = (cycle_ - 1) / 40;
-  const auto col = (cycle_ - 1) % 40;
-  if (cursorWithinSprite()) {
-    c = '#';
-  }
-  std::cout << cycle_ << " drawing " << c << " at " << row << ", " << col
-            << std::endl;
-  screen_[row * 40 + col] = c;
+  checkSignalStrength();
+  drawPixel();
 
   if (currentOp_->execute(*this)) {
-    ops_.erase(ops_.begin());
+    ops_.pop_front();
     currentOp_ = nullptr;
   }
 }
 
-
 void Cpu::run() {
-  while (!ops_.empty()) {
-    increaseCycle();
+  while (!ops_.empty() || currentOp_ != nullptr) {
+    cycle();
   }
 }
 
-void Cpu::addOp(Op op) {
+void Cpu::addOp(Op&& op) {
   ops_.push_back(std::move(op));
 }
 
@@ -106,8 +93,8 @@ void Cpu::addX(int64_t x) {
 }
 
 void Cpu::printScreen() {
-  for (auto i = 0; i < 240; ++i) {
-    if (i % 40 == 0) {
+  for (auto i = 0U; i < displayWidth_ * displayHeight_; ++i) {
+    if (i % displayWidth_ == 0) {
       std::cout << std::endl;
     }
     std::cout << screen_[i];
@@ -116,11 +103,29 @@ void Cpu::printScreen() {
 }
 
 bool Cpu::cursorWithinSprite() const {
-  const int64_t currentPixel = (cycle_ - 1) % 40U;
-  std::cout << currentPixel << std::endl;
+  const int64_t currentPixel = (cycle_ - 1) % displayWidth_;
   return currentPixel >= register_ - 1 && currentPixel <= register_ + 1;
 }
 
+void Cpu::checkSignalStrength() {
+  // For part 1
+  if ((cycle_ + 20) % displayWidth_ == 0) {
+    signalStrength_ += register_ * cycle_;
+    std::cout << "Signal strength: " << signalStrength_ << std::endl;
+  }
+}
+
+void Cpu::drawPixel() {
+  // Check if the register_ is covering the pixel where the current cycle is
+  // drawing
+  auto c = '.';
+  const auto row = (cycle_ - 1) / displayWidth_;
+  const auto col = (cycle_ - 1) % displayWidth_;
+  if (cursorWithinSprite()) {
+    c = '#';
+  }
+  screen_[row * displayWidth_ + col] = c;
+}
 
 std::istream& operator>>(std::istream& is, Op& op) {
   std::string opString;
@@ -142,7 +147,7 @@ Op::Op(OpType type, int64_t x)
     , x_(x) {
 }
 
-
+// If the op is done, return true
 bool Op::execute(Cpu& cpu) {
   ++cycleCount_;
   switch (type_) {
@@ -167,11 +172,6 @@ int main(int argc, char** argv) {
     fileName = "10/input_example.txt";
   }
 
-  [[maybe_unused]] bool runExample{false};
-  if (fileName.find("example") != std::string::npos) {
-    runExample = true;
-  }
-
   const auto lines = read_lines(fileName);
 
   Cpu cpu;
@@ -184,7 +184,6 @@ int main(int argc, char** argv) {
 
   cpu.run();
   cpu.printScreen();
-
 
   return 0;
 }
