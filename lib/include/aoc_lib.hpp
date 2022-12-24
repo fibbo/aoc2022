@@ -15,7 +15,7 @@ using Tokens = std::vector<std::string>;
 Tokens split_stringstream(
     const std::stringstream& stringstream, const std::string& delim = "\n");
 
-Lines read_lines(const std::string& filePath);
+Lines read_lines(const std::string& filePath, const std::string& delim = "\n");
 
 Tokens split_line(const std::string& line, const std::string& delim);
 

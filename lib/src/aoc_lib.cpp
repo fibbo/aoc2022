@@ -28,8 +28,8 @@ Tokens split_stringstream(
   return lines;
 }
 
-Lines read_lines(const std::string& filePath) {
-  return split_stringstream(read_file(open_file(filePath)), "\n");
+Lines read_lines(const std::string& filePath, const std::string& delim) {
+  return split_stringstream(read_file(open_file(filePath)), delim);
 }
 
 // Not really necessary function, but I'm too lazy to type this out every time
