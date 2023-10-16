@@ -9,11 +9,13 @@
 
 using namespace pgl::aoc;
 
-struct File {
+struct File
+{
   File(const std::string& name, bool isDirectory, uint64_t size)
       : name{name}
       , isDirectory{isDirectory}
-      , size{size} {
+      , size{size}
+  {
   }
   std::string name;
   bool isDirectory;
@@ -22,17 +24,21 @@ struct File {
   std::vector<File> children;
 };
 
-void parseFileSystem(const Lines& lines, File* root) {
+void parseFileSystem(const Lines& lines, File* root)
+{
   File* parent{root};
-  for (const auto& line : lines | ranges::views::drop(1)) {
+  for (const auto& line : lines | ranges::views::drop(1))
+  {
     // Move one folder up
-    if (line == "$ cd ..") {
+    if (line == "$ cd ..")
+    {
       parent = parent->parent;
       continue;
     }
 
     // About to list directory
-    if (line == "$ ls") {
+    if (line == "$ ls")
+    {
       continue;
     }
 
@@ -40,7 +46,8 @@ void parseFileSystem(const Lines& lines, File* root) {
     // This is always follwed by a $ ls
     // Make the <path> File the parent for the next $ ls
     // NB: $ cd / has been dropped from the input
-    if (line.starts_with("$ cd ")) {
+    if (line.starts_with("$ cd "))
+    {
       const auto name = line.substr(5);
       const auto it = std::find_if(
           parent->children.begin(),
@@ -51,18 +58,24 @@ void parseFileSystem(const Lines& lines, File* root) {
     }
 
     const auto tokens = split_line(line, " ");
-    if (tokens[0] == "dir") {
+    if (tokens[0] == "dir")
+    {
       parent->children.emplace_back(tokens[1], true, 0);
       parent->children.back().parent = parent;
-    } else {
+    }
+    else
+    {
       parent->children.emplace_back(tokens[1], false, std::stoul(tokens[0]));
     }
   }
 }
 
-void calculateFolderSize(File* root) {
-  for (auto& child : root->children) {
-    if (child.isDirectory) {
+void calculateFolderSize(File* root)
+{
+  for (auto& child : root->children)
+  {
+    if (child.isDirectory)
+    {
       calculateFolderSize(&child);
     }
     root->size += child.size;
@@ -70,25 +83,33 @@ void calculateFolderSize(File* root) {
 }
 
 template <typename F>
-void traverseFileSystem(File* root, F&& f) {
-  for (auto& child : root->children) {
-    if (child.isDirectory) {
+void traverseFileSystem(File* root, F&& f)
+{
+  for (auto& child : root->children)
+  {
+    if (child.isDirectory)
+    {
       f(child);
       traverseFileSystem(&child, f);
     }
   }
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
   std::string fileName;
-  if (argc == 2) {
+  if (argc == 2)
+  {
     fileName = argv[1];
-  } else {
+  }
+  else
+  {
     fileName = "07/input_example.txt";
   }
 
   bool runExample{false};
-  if (fileName.find("example") != std::string::npos) {
+  if (fileName.find("example") != std::string::npos)
+  {
     runExample = true;
   }
 
@@ -99,16 +120,21 @@ int main(int argc, char** argv) {
   calculateFolderSize(&root);
 
   uint64_t size{0};
-  const auto hasMaxSize = [&size](const File& file) {
-    if (file.isDirectory && file.size <= 100000) {
+  const auto hasMaxSize = [&size](const File& file)
+  {
+    if (file.isDirectory && file.size <= 100000)
+    {
       size += file.size;
     }
   };
   traverseFileSystem(&root, hasMaxSize);
   std::cout << size << std::endl;
-  if (runExample) {
+  if (runExample)
+  {
     assert(size == 95437);
-  } else {
+  }
+  else
+  {
     assert(size == 1428881);
   }
 
@@ -117,17 +143,22 @@ int main(int argc, char** argv) {
   constexpr uint64_t useableSpace = maxSize - minSpaceNeeded;
   const auto spaceNeeded = root.size - useableSpace;
   std::vector<uint64_t> candidatesToDelete;
-  const auto wouldFreeEnoughSpace = [&candidatesToDelete,
-                                     spaceNeeded](const File& file) {
-    if (file.isDirectory && file.size >= spaceNeeded) {
+  const auto wouldFreeEnoughSpace =
+      [&candidatesToDelete, spaceNeeded](const File& file)
+  {
+    if (file.isDirectory && file.size >= spaceNeeded)
+    {
       candidatesToDelete.push_back(file.size);
     }
   };
   traverseFileSystem(&root, wouldFreeEnoughSpace);
   std::sort(candidatesToDelete.begin(), candidatesToDelete.end());
-  if (runExample) {
+  if (runExample)
+  {
     assert(candidatesToDelete.front() == 24933642);
-  } else {
+  }
+  else
+  {
     assert(candidatesToDelete.front() == 10475598);
   }
   std::cout << candidatesToDelete.front() << std::endl;

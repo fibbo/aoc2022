@@ -1,15 +1,16 @@
 # Copyright [2019] Zurich Instruments AG
 ---
-Language:        Cpp
-Standard:        Cpp11
-PointerAlignment: Left  # C++ style
+Language: Cpp
+Standard: Cpp11
+PointerAlignment: Left # C++ style
 DerivePointerAlignment: false
 Cpp11BracedListStyle: true
+BreakBeforeBraces: Allman
 
 # Includes:
-IncludeBlocks:   Preserve
-SortIncludes:    true
-IncludeIsMainRegex: '(_test)?$'
+IncludeBlocks: Preserve
+SortIncludes: true
+IncludeIsMainRegex: "(_test)?$"
 # Ordering specific to generic
 # Rules are parsed in order top to bottom
 # PP directives:
@@ -104,4 +105,4 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 6000
 
-DisableFormat:   false
+DisableFormat: false

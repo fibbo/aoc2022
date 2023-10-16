@@ -9,27 +9,34 @@
 
 using namespace pgl::aoc;
 
-struct Move {
+struct Move
+{
   char direction;
   int64_t distance;
 };
 
-std::istream& operator>>(std::istream& is, Move& move) {
+std::istream& operator>>(std::istream& is, Move& move)
+{
   is >> move.direction >> move.distance;
   return is;
 }
 
-class Rope {
+class Rope
+{
 public:
   explicit Rope(uint32_t numberKnots)
       : knots_{std::vector<Point>(numberKnots)}
       , head_{knots_.front()}
-      , tail_{knots_.back()} {
+      , tail_{knots_.back()}
+  {
   }
 
-  void move(const Move& move) {
-    for (auto i = 0U; i < move.distance; ++i) {
-      switch (move.direction) {
+  void move(const Move& move)
+  {
+    for (auto i = 0U; i < move.distance; ++i)
+    {
+      switch (move.direction)
+      {
       case 'U':
         head_.y += 1;
         break;
@@ -48,40 +55,54 @@ public:
     }
   }
 
-  size_t visitedPoints() const {
+  size_t visitedPoints() const
+  {
     return visitedPoints_.size();
   }
 
 private:
-  void moveKnots() {
-    for (auto i = 0U; i < knots_.size() - 1; ++i) {
+  void moveKnots()
+  {
+    for (auto i = 0U; i < knots_.size() - 1; ++i)
+    {
       moveTwoKnots(knots_[i], knots_[i + 1]);
     }
   }
 
-  void moveTwoKnots(Point& head, Point& tail) {
+  void moveTwoKnots(Point& head, Point& tail)
+  {
     const auto xDiff = head.x - tail.x;
     const auto yDiff = head.y - tail.y;
-    if (std::abs(xDiff) <= 1 && std::abs(yDiff) <= 1) {
+    if (std::abs(xDiff) <= 1 && std::abs(yDiff) <= 1)
+    {
       return;
     }
-    if (xDiff > 1) {
+    if (xDiff > 1)
+    {
       tail.x += 1;
-    } else if (xDiff < -1) {
+    }
+    else if (xDiff < -1)
+    {
       tail.x -= 1;
     }
-    if (yDiff > 1) {
+    if (yDiff > 1)
+    {
       tail.y += 1;
-    } else if (yDiff < -1) {
+    }
+    else if (yDiff < -1)
+    {
       tail.y -= 1;
     }
-    if (std::abs(xDiff) + std::abs(yDiff) == 3) {
+    if (std::abs(xDiff) + std::abs(yDiff) == 3)
+    {
       // Tail needs to move diagonally
-      if (std::abs(xDiff) == 2) {
+      if (std::abs(xDiff) == 2)
+      {
         // Align in x direction
         tail.y = head.y;
-
-      } else {
+      }
+      else
+      {
         // Align in y direction
         tail.x = head.x;
       }
@@ -94,16 +115,21 @@ private:
   Point& tail_;
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
   std::string fileName;
-  if (argc == 2) {
+  if (argc == 2)
+  {
     fileName = argv[1];
-  } else {
+  }
+  else
+  {
     fileName = "09/input_example.txt";
   }
 
   [[maybe_unused]] bool runExample{false};
-  if (fileName.find("example") != std::string::npos) {
+  if (fileName.find("example") != std::string::npos)
+  {
     runExample = true;
   }
 
@@ -113,9 +139,11 @@ int main(int argc, char** argv) {
   Rope rope(2);
   Rope rope2(10);
   Move m;
-  for (const auto& line : lines) {
+  for (const auto& line : lines)
+  {
     std::istringstream is(line);
-    while (is >> m) {
+    while (is >> m)
+    {
       rope.move(m);
       rope2.move(m);
     }
