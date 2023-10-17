@@ -1,3 +1,8 @@
+/*
+ * AoC 2022 Day 2
+ * https://adventofcode.com/2022/day/2
+ */
+
 #include "aoc_lib.hpp"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
