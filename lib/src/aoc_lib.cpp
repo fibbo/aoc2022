@@ -65,7 +65,6 @@ bool Point::operator==(const Point& p) const
   return p.x == x && p.y == y;
 }
 
-
 }  // namespace pgl::aoc
 
 namespace std
@@ -74,4 +73,5 @@ size_t hash<pgl::aoc::Point>::operator()(const pgl::aoc::Point& p) const
 {
   return (53 + p.x) * 53 + p.y;
 }
+
 }  // namespace std

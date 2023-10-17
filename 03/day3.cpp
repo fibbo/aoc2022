@@ -1,3 +1,8 @@
+/*
+ * AoC 2022 Day 3
+ * https://adventofcode.com/2022/day/3
+ */
+
 #include "aoc_lib.hpp"
 #include <algorithm>
 #include <array>
@@ -9,18 +14,6 @@
 
 using namespace pgl::aoc;
 
-constexpr uint32_t prioMap(char c)
-{
-  // a-z have priority 1-26
-  // A-Z have priority 27-52
-  return c >= 'a' ? c - 'a' + 1 : c - 'A' + 27;
-}
-
-static_assert(prioMap('a') == 1);
-static_assert(prioMap('z') == 26);
-static_assert(prioMap('A') == 27);
-static_assert(prioMap('Z') == 52);
-
 void part1(const Lines& backpacks)
 {
   std::unordered_set<char> seen;
@@ -30,6 +23,7 @@ void part1(const Lines& backpacks)
     {
       const auto firstCompartment =
           std::string_view(line.c_str(), line.size() / 2);
+
       std::for_each(
           firstCompartment.begin(),
           firstCompartment.end(),
@@ -38,16 +32,20 @@ void part1(const Lines& backpacks)
     {
       const auto secondCompartment =
           std::string_view(line.c_str() + line.size() / 2);
+
+
+      // NOTE: This assumes that only ever one element is in both compartments
+      // which is OK according to the problem description.
       std::ignore = std::any_of(
           secondCompartment.begin(),
           secondCompartment.end(),
-          [&seen, &prioSum](const auto& c)
+          [&seen, &prioSum](const auto& c) -> auto
           {
             if (!seen.contains(c))
             {
               return false;
             }
-            prioSum += prioMap(c);
+            prioSum += convertCharToInt(c);
             return true;
           });
     }
@@ -83,7 +81,7 @@ void part2(const Lines& backpacks)
         std::back_inserter(intersection));
 
     assert(intersection.size() == 1);
-    prioSum += prioMap(intersection[0]);
+    prioSum += convertCharToInt(intersection[0]);
   }
   std::cout << prioSum << std::endl;
 }

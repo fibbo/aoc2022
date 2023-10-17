@@ -30,7 +30,7 @@ public:
         }
         else
         {
-          grid_[index] = lines[i][j] - 'a';
+          grid_[index] = convertCharToInt(lines[i][j]);
         }
       }
     }
